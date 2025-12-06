@@ -18,10 +18,14 @@ namespace BilgeBlog.Application.Validators.PostValidators
             RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage("Kullanıcı ID boş olamaz.");
 
+            RuleFor(x => x.Tags)
+                .NotNull().WithMessage("Tag listesi boş olamaz.")
+                .Must(tags => tags != null && tags.Count == 5).WithMessage("Tam olarak 5 tag girilmelidir.");
+
             RuleForEach(x => x.Tags)
                 .NotEmpty().WithMessage("Tag boş olamaz.")
-                .MaximumLength(50).WithMessage("Tag en fazla 50 karakter olabilir.")
-                .When(x => x.Tags != null && x.Tags.Any());
+                .Length(50).WithMessage("Her tag tam olarak 50 karakter olmalıdır.")
+                .When(x => x.Tags != null && x.Tags.Count == 5);
         }
     }
 }

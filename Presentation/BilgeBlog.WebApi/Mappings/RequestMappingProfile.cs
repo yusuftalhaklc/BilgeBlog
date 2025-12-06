@@ -14,7 +14,13 @@ namespace BilgeBlog.WebApi.Mappings
     {
         public RequestMappingProfile()
         {
+            CreateMap<LoginUserRequest, LoginUserCommand>();
+
+            CreateMap<RegisterUserRequest, RegisterUserCommand>();
+
             CreateMap<ChangePasswordRequest, ChangePasswordCommand>();
+
+            CreateMap<RefreshTokenRequest, RefreshTokenCommand>();
 
             CreateMap<CreateCommentRequest, CreateCommentCommand>()
                 .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))

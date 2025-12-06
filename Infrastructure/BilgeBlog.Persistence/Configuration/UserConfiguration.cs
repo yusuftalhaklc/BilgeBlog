@@ -36,6 +36,11 @@ namespace BilgeBlog.Persistence.Configuration
             builder.Property(x => x.RoleId)
                 .IsRequired();
 
+            builder.Property(x => x.RefreshToken)
+                .HasMaxLength(500);
+
+            builder.Property(x => x.RefreshTokenExpiry);
+
             builder.HasOne(x => x.Role)
                 .WithMany(x => x.Users)
                 .HasForeignKey(x => x.RoleId)

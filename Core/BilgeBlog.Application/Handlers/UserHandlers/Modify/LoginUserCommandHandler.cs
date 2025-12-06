@@ -1,4 +1,5 @@
 using AutoMapper;
+using BilgeBlog.Application.Contracts;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
 using BilgeBlog.Application.DTOs.UserDtos.Results;
 using BilgeBlog.Application.Exceptions;
@@ -12,11 +13,13 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginResult>
     {
         private readonly IUserRepository _userRepository;
+        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
-        public LoginUserCommandHandler(IUserRepository userRepository, IMapper mapper)
+        public LoginUserCommandHandler(IUserRepository userRepository, ITokenService tokenService, IMapper mapper)
         {
             _userRepository = userRepository;
+            _tokenService = tokenService;
             _mapper = mapper;
         }
 
@@ -34,7 +37,19 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
                 throw new UnauthorizedException("Email veya şifre hatalı.");
 
             var userResult = _mapper.Map<UserResult>(user);
-            return new LoginResult { User = userResult };
+            var token = _tokenService.GenerateToken(userResult);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _userRepository.Update(user);
+
+            return new LoginResult 
+            { 
+                User = userResult,
+                Token = token,
+                RefreshToken = refreshToken
+            };
         }
     }
 }

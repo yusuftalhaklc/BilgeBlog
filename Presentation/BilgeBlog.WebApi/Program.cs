@@ -6,7 +6,11 @@ using BilgeBlog.WebApi.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+using AspNetCoreRateLimit;
 using System.Text;
 
 namespace BilgeBlog.WebApi
@@ -23,7 +27,29 @@ namespace BilgeBlog.WebApi
             builder.Services.AddWebApiAutoMapperService();
             builder.Services.AddMediatRService();
 
-            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<BilgeBlog.Application.Contracts.ITokenService, TokenService>();
+
+            // CORS
+            var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", policy =>
+                {
+                    policy.WithOrigins(corsOrigins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
+            // Health Checks
+            builder.Services.AddHealthChecks();
+
+            // Rate Limiting
+            builder.Services.AddMemoryCache();
+            builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+            builder.Services.AddInMemoryRateLimiting();
+            builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             // FluentValidation
             builder.Services.AddFluentValidationAutoValidation();
@@ -98,12 +124,39 @@ namespace BilgeBlog.WebApi
                 app.UseSwaggerUI();
             }
 
+            // Rate Limiting
+            app.UseIpRateLimiting();
+
             app.UseHttpsRedirection();
+
+            // CORS
+            app.UseCors("AllowSpecificOrigins");
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+            // Health Checks
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+                    var result = System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries.Select(x => new
+                        {
+                            name = x.Key,
+                            status = x.Value.Status.ToString(),
+                            exception = x.Value.Exception?.Message,
+                            duration = x.Value.Duration.ToString()
+                        })
+                    });
+                    await context.Response.WriteAsync(result);
+                }
+            });
 
             app.MapControllers();
 

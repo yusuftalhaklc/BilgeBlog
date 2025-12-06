@@ -1,8 +1,7 @@
-namespace BilgeBlog.Application.DTOs.UserDtos.Results
+namespace BilgeBlog.WebApi.Requests.UserRequests
 {
-    public class LoginResult
+    public class RefreshTokenRequest
     {
-        public UserResult User { get; set; } = null!;
         public string Token { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
     }
