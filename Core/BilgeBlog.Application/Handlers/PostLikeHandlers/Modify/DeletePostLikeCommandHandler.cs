@@ -1,4 +1,5 @@
 using BilgeBlog.Application.DTOs.PostLikeDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ namespace BilgeBlog.Application.Handlers.PostLikeHandlers.Modify
                 .FirstOrDefaultAsync(x => x.PostId == request.PostId && x.UserId == request.UserId, cancellationToken);
 
             if (postLike == null)
-                return false;
+                throw new NotFoundException("Beğeni bulunamadı.");
 
             return await _postLikeRepository.Remove(postLike);
         }

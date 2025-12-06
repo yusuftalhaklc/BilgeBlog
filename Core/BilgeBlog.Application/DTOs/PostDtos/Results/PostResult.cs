@@ -18,6 +18,7 @@ namespace BilgeBlog.Application.DTOs.PostDtos.Results
         public List<CategoryResult> Categories { get; set; } = new();
         public int TotalLikeCount { get; set; }
         public int TotalCommentCount { get; set; }
+        public bool IsLiked { get; set; }
     }
 }
 

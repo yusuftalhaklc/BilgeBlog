@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\BilgeBlog.Persistence\BilgeBlog.Persistence.csproj" />
+    <ProjectReference Include="..\..\Core\BilgeBlog.Application\BilgeBlog.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

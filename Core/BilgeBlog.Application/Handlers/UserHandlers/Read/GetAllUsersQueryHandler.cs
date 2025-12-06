@@ -2,6 +2,7 @@ using AutoMapper;
 using BilgeBlog.Application.DTOs.Common;
 using BilgeBlog.Application.DTOs.UserDtos.Queries;
 using BilgeBlog.Application.DTOs.UserDtos.Results;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using BilgeBlog.Domain.Enums;
 using MediatR;
@@ -27,7 +28,7 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Read
                 .FirstOrDefaultAsync(x => x.Id == request.CurrentUserId, cancellationToken);
 
             if (currentUser == null || currentUser.Role?.Name != RoleEnum.Admin.ToString())
-                throw new UnauthorizedAccessException("Bu işlem için admin yetkisi gereklidir.");
+                throw new ForbiddenException("Bu işlem için admin yetkisi gereklidir.");
 
             var query = _userRepository.GetAll(false)
                 .Include(x => x.Role);

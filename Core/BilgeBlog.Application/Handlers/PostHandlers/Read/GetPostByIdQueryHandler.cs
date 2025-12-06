@@ -1,6 +1,7 @@
 using AutoMapper;
 using BilgeBlog.Application.DTOs.PostDtos.Queries;
 using BilgeBlog.Application.DTOs.PostDtos.Results;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +11,13 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
     public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostResult>
     {
         private readonly IPostRepository _postRepository;
+        private readonly IPostLikeRepository _postLikeRepository;
         private readonly IMapper _mapper;
 
-        public GetPostByIdQueryHandler(IPostRepository postRepository, IMapper mapper)
+        public GetPostByIdQueryHandler(IPostRepository postRepository, IPostLikeRepository postLikeRepository, IMapper mapper)
         {
             _postRepository = postRepository;
+            _postLikeRepository = postLikeRepository;
             _mapper = mapper;
         }
 
@@ -31,9 +34,18 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (post == null)
-                return null!;
+                throw new NotFoundException("Post", request.Id);
 
-            return _mapper.Map<PostResult>(post);
+            var postResult = _mapper.Map<PostResult>(post);
+
+            if (request.UserId.HasValue)
+            {
+                var isLiked = await _postLikeRepository.GetAll(false)
+                    .AnyAsync(x => x.PostId == postResult.Id && x.UserId == request.UserId.Value, cancellationToken);
+                postResult.IsLiked = isLiked;
+            }
+
+            return postResult;
         }
     }
 }

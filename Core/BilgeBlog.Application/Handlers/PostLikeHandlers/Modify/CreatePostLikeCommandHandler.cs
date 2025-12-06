@@ -1,4 +1,5 @@
 using BilgeBlog.Application.DTOs.PostLikeDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using BilgeBlog.Domain.Entities;
 using MediatR;
@@ -21,7 +22,7 @@ namespace BilgeBlog.Application.Handlers.PostLikeHandlers.Modify
                 .FirstOrDefaultAsync(x => x.PostId == request.PostId && x.UserId == request.UserId, cancellationToken);
 
             if (existing != null)
-                return false;
+                throw new ConflictException("Bu post zaten beğenilmiş.");
 
             var postLike = new PostLike
             {

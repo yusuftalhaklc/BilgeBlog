@@ -1,4 +1,5 @@
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
 using BCrypt.Net;
@@ -18,11 +19,11 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
         {
             var user = await _userRepository.GetByIdAsync(request.UserId);
             if (user == null)
-                return false;
+                throw new NotFoundException("User", request.UserId);
 
             bool isOldPasswordValid = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash);
             if (!isOldPasswordValid)
-                return false;
+                throw new BadRequestException("Eski şifre hatalı.");
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             return await _userRepository.Update(user);

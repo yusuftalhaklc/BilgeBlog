@@ -3,10 +3,10 @@ using MediatR;
 
 namespace BilgeBlog.Application.DTOs.UserDtos.Commands
 {
-    public class LoginUserCommand : IRequest<UserResult>
+    public class LoginUserCommand : IRequest<LoginResult>
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
 

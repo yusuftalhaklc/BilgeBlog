@@ -1,13 +1,10 @@
-using MediatR;
-
-namespace BilgeBlog.Application.DTOs.PostDtos.Commands
+namespace BilgeBlog.WebApi.Requests.PostRequests
 {
-    public class CreatePostCommand : IRequest<Guid>
+    public class CreatePostRequest
     {
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public bool IsPublished { get; set; } = true;
-        public Guid UserId { get; set; }
     }
 }
 

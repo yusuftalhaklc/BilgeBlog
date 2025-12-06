@@ -1,5 +1,6 @@
 using AutoMapper;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using BilgeBlog.Domain.Entities;
 using BilgeBlog.Domain.Enums;
@@ -28,13 +29,13 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
                 .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
 
             if (existingUser != null)
-                throw new Exception("Bu email adresi zaten kullanılıyor.");
+                throw new ConflictException("Bu email adresi zaten kullanılıyor.");
 
             var authorRole = await _roleRepository.GetAll(false)
                 .FirstOrDefaultAsync(x => x.Name == RoleEnum.Author.ToString(), cancellationToken);
 
             if (authorRole == null)
-                throw new Exception("Author rolü bulunamadı. Lütfen veritabanını seed edin.");
+                throw new NotFoundException("Author rolü bulunamadı. Lütfen veritabanını seed edin.");
 
             var user = _mapper.Map<User>(request);
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);

@@ -40,7 +40,8 @@ namespace BilgeBlog.Application.Mappings
                 .ForMember(dest => dest.TotalLikeCount, opt => opt.MapFrom(src => src.Likes != null ? src.Likes.Count : 0))
                 .ForMember(dest => dest.TotalCommentCount, opt => opt.MapFrom(src => src.Comments != null ? src.Comments.Count : 0));
 
-            CreateMap<CreatePostCommand, Post>();
+            CreateMap<CreatePostCommand, Post>()
+                .ForMember(dest => dest.Slug, opt => opt.Ignore());
 
             CreateMap<Category, CategoryResult>();
             CreateMap<CreateCategoryCommand, Category>();

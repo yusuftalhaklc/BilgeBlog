@@ -1,6 +1,9 @@
 using BilgeBlog.Application.DTOs.PostDtos.Commands;
+using BilgeBlog.Application.Exceptions;
+using BilgeBlog.Application.Helpers;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BilgeBlog.Application.Handlers.PostHandlers.Modify
 {
@@ -17,10 +20,21 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Modify
         {
             var post = await _postRepository.GetByIdAsync(request.Id);
             if (post == null)
-                return false;
+                throw new NotFoundException("Post", request.Id);
 
+            // Title değiştiyse veya slug yoksa, slug'ı yeniden oluştur
+            var titleChanged = post.Title != request.Title;
             post.Title = request.Title;
-            post.Slug = request.Slug;
+            
+            if (titleChanged || string.IsNullOrEmpty(post.Slug))
+            {
+                post.Slug = await SlugHelper.GenerateUniqueSlugAsync(
+                    request.Title,
+                    async (slug) => await _postRepository.GetAll(false)
+                        .AnyAsync(p => p.Slug == slug && p.Id != request.Id, cancellationToken)
+                );
+            }
+            
             post.Content = request.Content;
             post.IsPublished = request.IsPublished;
             post.UserId = request.UserId;

@@ -11,11 +11,13 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
     public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, PagedResult<PostResult>>
     {
         private readonly IPostRepository _postRepository;
+        private readonly IPostLikeRepository _postLikeRepository;
         private readonly IMapper _mapper;
 
-        public GetAllPostsQueryHandler(IPostRepository postRepository, IMapper mapper)
+        public GetAllPostsQueryHandler(IPostRepository postRepository, IPostLikeRepository postLikeRepository, IMapper mapper)
         {
             _postRepository = postRepository;
+            _postLikeRepository = postLikeRepository;
             _mapper = mapper;
         }
 
@@ -37,9 +39,25 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
+            var postResults = _mapper.Map<List<PostResult>>(posts);
+
+            if (request.UserId.HasValue && postResults.Any())
+            {
+                var postIds = postResults.Select(p => p.Id).ToList();
+                var likedPostIds = await _postLikeRepository.GetAll(false)
+                    .Where(x => postIds.Contains(x.PostId) && x.UserId == request.UserId.Value)
+                    .Select(x => x.PostId)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var postResult in postResults)
+                {
+                    postResult.IsLiked = likedPostIds.Contains(postResult.Id);
+                }
+            }
+
             return new PagedResult<PostResult>
             {
-                Data = _mapper.Map<List<PostResult>>(posts),
+                Data = postResults,
                 TotalCount = totalCount,
                 PageNumber = request.PageNumber,
                 PageSize = request.PageSize
