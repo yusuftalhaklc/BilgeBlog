@@ -10,11 +10,41 @@
     <Folder Include="DTOs\UserDtos\Commands\" />
     <Folder Include="DTOs\UserDtos\Results\" />
     <Folder Include="DTOs\UserDtos\Queries\" />
+    <Folder Include="DTOs\RoleDtos\Commands\" />
+    <Folder Include="DTOs\RoleDtos\Queries\" />
+    <Folder Include="DTOs\RoleDtos\Results\" />
+    <Folder Include="DTOs\PostDtos\Commands\" />
+    <Folder Include="DTOs\PostDtos\Queries\" />
+    <Folder Include="DTOs\PostDtos\Results\" />
+    <Folder Include="DTOs\CategoryDtos\Commands\" />
+    <Folder Include="DTOs\CategoryDtos\Queries\" />
+    <Folder Include="DTOs\CategoryDtos\Results\" />
+    <Folder Include="DTOs\TagDtos\Commands\" />
+    <Folder Include="DTOs\TagDtos\Queries\" />
+    <Folder Include="DTOs\TagDtos\Results\" />
+    <Folder Include="DTOs\CommentDtos\Commands\" />
+    <Folder Include="DTOs\CommentDtos\Queries\" />
+    <Folder Include="DTOs\CommentDtos\Results\" />
+    <Folder Include="DTOs\PostCategoryDtos\Commands\" />
+    <Folder Include="DTOs\PostCategoryDtos\Queries\" />
+    <Folder Include="DTOs\PostCategoryDtos\Results\" />
+    <Folder Include="DTOs\PostTagDtos\Commands\" />
+    <Folder Include="DTOs\PostTagDtos\Queries\" />
+    <Folder Include="DTOs\PostTagDtos\Results\" />
+    <Folder Include="DTOs\PostLikeDtos\Commands\" />
+    <Folder Include="DTOs\PostLikeDtos\Queries\" />
+    <Folder Include="DTOs\PostLikeDtos\Results\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="MediatR" Version="14.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BilgeBlog.Domain\BilgeBlog.Domain.csproj" />
+    <ProjectReference Include="..\BilgeBlog.Contract\BilgeBlog.Contract.csproj" />
   </ItemGroup>
 
 </Project>
