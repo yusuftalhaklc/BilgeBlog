@@ -118,11 +118,9 @@ namespace BilgeBlog.WebApi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            // Swagger her ortamda açık (Development ve Production)
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             // Rate Limiting
             app.UseIpRateLimiting();
