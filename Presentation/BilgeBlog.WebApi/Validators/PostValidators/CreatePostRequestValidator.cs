@@ -21,7 +21,8 @@ namespace BilgeBlog.WebApi.Validators.PostValidators
 
             RuleForEach(x => x.Tags)
                 .NotEmpty().WithMessage("Tag boş olamaz.")
-                .Length(50).WithMessage("Her tag tam olarak 50 karakter olmalıdır.")
+                .MinimumLength(2).WithMessage("Her tag en az 2 karakter olmalıdır.")
+                .MaximumLength(50).WithMessage("Her tag en fazla 50 karakter olmalıdır.")
                 .When(x => x.Tags != null && x.Tags.Count == 5);
         }
     }
