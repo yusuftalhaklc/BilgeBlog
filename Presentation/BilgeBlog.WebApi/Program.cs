@@ -152,7 +152,7 @@ Bearer YOUR_JWT_TOKEN
 - `GET /api/Post/{id}` - Post detayı (Herkes)
 - `POST /api/Post` - Post oluştur (Admin veya Author)
   - **Önemli:** Post oluştururken tam olarak **5 tag** girilmelidir
-  - Her tag tam olarak **50 karakter** olmalıdır
+  - Her tag minimum **2** maksimum **50 karakter** olmalıdır
 - `PUT /api/Post/{id}` - Post güncelle (Admin veya Author)
 - `DELETE /api/Post/{id}` - Post sil (Admin veya Author)
 

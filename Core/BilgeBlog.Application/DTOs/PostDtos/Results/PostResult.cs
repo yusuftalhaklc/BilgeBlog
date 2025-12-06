@@ -15,7 +15,7 @@ namespace BilgeBlog.Application.DTOs.PostDtos.Results
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public List<TagResult> Tags { get; set; } = new();
-        public List<CategoryResult> Categories { get; set; } = new();
+        public CategoryResult Category { get; set; } = new();
         public int TotalLikeCount { get; set; }
         public int TotalCommentCount { get; set; }
         public bool IsLiked { get; set; }
