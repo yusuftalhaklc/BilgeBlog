@@ -1,3 +1,6 @@
+using BilgeBlog.Application.DTOs.CategoryDtos.Results;
+using BilgeBlog.Application.DTOs.TagDtos.Results;
+
 namespace BilgeBlog.Application.DTOs.PostDtos.Results
 {
     public class PostResult
@@ -11,6 +14,10 @@ namespace BilgeBlog.Application.DTOs.PostDtos.Results
         public string UserName { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public List<TagResult> Tags { get; set; } = new();
+        public List<CategoryResult> Categories { get; set; } = new();
+        public int TotalLikeCount { get; set; }
+        public int TotalCommentCount { get; set; }
     }
 }
 

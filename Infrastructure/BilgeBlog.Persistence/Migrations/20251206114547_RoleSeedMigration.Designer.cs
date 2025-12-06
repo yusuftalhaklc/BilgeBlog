@@ -4,6 +4,7 @@ using BilgeBlog.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BilgeBlog.Persistence.Migrations
 {
     [DbContext(typeof(BilgeBlogDbContext))]
-    partial class BilgeBlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251206114547_RoleSeedMigration")]
+    partial class RoleSeedMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,4 +1,5 @@
 using BilgeBlog.Domain.Entities;
+using BilgeBlog.Persistence.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,6 +26,8 @@ namespace BilgeBlog.Persistence.Configuration
                 .WithOne(x => x.Role)
                 .HasForeignKey(x => x.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            new RoleSeed().Configure(builder);
         }
     }
 }
