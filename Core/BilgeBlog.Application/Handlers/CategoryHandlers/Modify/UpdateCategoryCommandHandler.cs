@@ -1,6 +1,8 @@
 using BilgeBlog.Application.DTOs.CategoryDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BilgeBlog.Application.Handlers.CategoryHandlers.Modify
 {
@@ -17,9 +19,16 @@ namespace BilgeBlog.Application.Handlers.CategoryHandlers.Modify
         {
             var category = await _categoryRepository.GetByIdAsync(request.Id);
             if (category == null)
-                return false;
+                throw new NotFoundException("Category", request.Id);
 
-            category.Name = request.Name;
+            // Aynı isimde başka bir kategori var mı kontrol et
+            var existingCategory = await _categoryRepository.GetAll(false)
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == request.Name.Trim().ToLower() && c.Id != request.Id, cancellationToken);
+
+            if (existingCategory != null)
+                throw new ConflictException($"'{request.Name}' isimli kategori zaten mevcut.");
+
+            category.Name = request.Name.Trim();
             return await _categoryRepository.Update(category);
         }
     }

@@ -1,7 +1,9 @@
 using AutoMapper;
+using BilgeBlog.Application.DTOs.CategoryDtos.Commands;
 using BilgeBlog.Application.DTOs.CommentDtos.Commands;
 using BilgeBlog.Application.DTOs.PostDtos.Commands;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
+using BilgeBlog.WebApi.Requests.CategoryRequests;
 using BilgeBlog.WebApi.Requests.CommentRequests;
 using BilgeBlog.WebApi.Requests.PostRequests;
 using BilgeBlog.WebApi.Requests.UserRequests;
@@ -26,6 +28,11 @@ namespace BilgeBlog.WebApi.Mappings
             CreateMap<UpdatePostRequest, UpdatePostCommand>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            CreateMap<CreateCategoryRequest, CreateCategoryCommand>();
+
+            CreateMap<UpdateCategoryRequest, UpdateCategoryCommand>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
     }
 }

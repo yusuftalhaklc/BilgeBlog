@@ -38,7 +38,7 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BaseResponse<PagedResult<PostResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<BaseResponse<PagedResult<PostListItemResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var query = new GetAllPostsQuery
             {
@@ -47,7 +47,7 @@ namespace BilgeBlog.WebApi.Controllers
                 UserId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null
             };
             var result = await _mediator.Send(query);
-            return Ok(BaseResponse<PagedResult<PostResult>>.Ok(result, "Bloglar başarıyla getirildi"));
+            return Ok(BaseResponse<PagedResult<PostListItemResult>>.Ok(result, "Bloglar başarıyla getirildi"));
         }
 
         [HttpGet("{id}")]
@@ -83,19 +83,29 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpGet("{postId}/comments")]
-        public async Task<ActionResult<BaseResponse<List<CommentResult>>>> GetComments(Guid postId)
+        public async Task<ActionResult<BaseResponse<PagedResult<CommentListItemResult>>>> GetComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var query = new GetPostCommentsQuery { PostId = postId };
+            var query = new GetPostCommentsQuery 
+            { 
+                PostId = postId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
             var result = await _mediator.Send(query);
-            return Ok(BaseResponse<List<CommentResult>>.Ok(result, "Yorumlar başarıyla getirildi"));
+            return Ok(BaseResponse<PagedResult<CommentListItemResult>>.Ok(result, "Yorumlar başarıyla getirildi"));
         }
 
         [HttpGet("{postId}/likes")]
-        public async Task<ActionResult<BaseResponse<List<PostLikeResult>>>> GetLikes(Guid postId)
+        public async Task<ActionResult<BaseResponse<PagedResult<PostLikeListItemResult>>>> GetLikes(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var query = new GetPostLikesQuery { PostId = postId };
+            var query = new GetPostLikesQuery 
+            { 
+                PostId = postId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
             var result = await _mediator.Send(query);
-            return Ok(BaseResponse<List<PostLikeResult>>.Ok(result, "Beğeniler başarıyla getirildi"));
+            return Ok(BaseResponse<PagedResult<PostLikeListItemResult>>.Ok(result, "Beğeniler başarıyla getirildi"));
         }
 
         [HttpGet("{postId}/tags")]

@@ -3,6 +3,8 @@ using BilgeBlog.Persistence.DependencyResolvers;
 using BilgeBlog.WebApi.DependencyResolvers;
 using BilgeBlog.WebApi.Middleware;
 using BilgeBlog.WebApi.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -22,6 +24,12 @@ namespace BilgeBlog.WebApi
             builder.Services.AddMediatRService();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
+
+            // FluentValidation
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddFluentValidationClientsideAdapters();
+            builder.Services.AddValidatorsFromAssembly(typeof(BilgeBlog.Application.Validators.PostValidators.CreatePostCommandValidator).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(BilgeBlog.WebApi.Validators.PostValidators.CreatePostRequestValidator).Assembly);
 
             builder.Services.AddAuthentication(options =>
             {
@@ -46,7 +54,40 @@ namespace BilgeBlog.WebApi
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "BilgeBlog API",
+                    Version = "v1",
+                    Description = "BilgeBlog Web API Documentation"
+                });
+
+                // JWT Authentication için Swagger yapılandırması
+                options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Name = "Authorization",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             var app = builder.Build();
 

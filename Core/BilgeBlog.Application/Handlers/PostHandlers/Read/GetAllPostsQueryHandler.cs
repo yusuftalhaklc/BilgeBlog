@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BilgeBlog.Application.Handlers.PostHandlers.Read
 {
-    public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, PagedResult<PostResult>>
+    public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, PagedResult<PostListItemResult>>
     {
         private readonly IPostRepository _postRepository;
         private readonly IPostLikeRepository _postLikeRepository;
@@ -21,7 +21,7 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<PostResult>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<PostListItemResult>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
         {
             var query = _postRepository.GetAll(false)
                 .Include(x => x.User)
@@ -39,7 +39,7 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            var postResults = _mapper.Map<List<PostResult>>(posts);
+            var postResults = _mapper.Map<List<PostListItemResult>>(posts);
 
             if (request.UserId.HasValue && postResults.Any())
             {
@@ -55,7 +55,7 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
                 }
             }
 
-            return new PagedResult<PostResult>
+            return new PagedResult<PostListItemResult>
             {
                 Data = postResults,
                 TotalCount = totalCount,

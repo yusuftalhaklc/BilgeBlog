@@ -40,6 +40,13 @@ namespace BilgeBlog.Application.Mappings
                 .ForMember(dest => dest.TotalLikeCount, opt => opt.MapFrom(src => src.Likes != null ? src.Likes.Count : 0))
                 .ForMember(dest => dest.TotalCommentCount, opt => opt.MapFrom(src => src.Comments != null ? src.Comments.Count : 0));
 
+            CreateMap<Post, PostListItemResult>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty))
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.PostTags != null && src.PostTags.Any() ? src.PostTags.Where(pt => pt.Tag != null).Select(pt => pt.Tag!).ToList() : new List<Tag>()))
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.PostCategories != null && src.PostCategories.Any() ? src.PostCategories.Where(pc => pc.Category != null).Select(pc => pc.Category!).ToList() : new List<Category>()))
+                .ForMember(dest => dest.TotalLikeCount, opt => opt.MapFrom(src => src.Likes != null ? src.Likes.Count : 0))
+                .ForMember(dest => dest.TotalCommentCount, opt => opt.MapFrom(src => src.Comments != null ? src.Comments.Count : 0));
+
             CreateMap<CreatePostCommand, Post>()
                 .ForMember(dest => dest.Slug, opt => opt.Ignore());
 
@@ -51,6 +58,9 @@ namespace BilgeBlog.Application.Mappings
 
             CreateMap<Comment, CommentResult>()
                 .ForMember(dest => dest.PostTitle, opt => opt.MapFrom(src => src.Post != null ? src.Post.Title : string.Empty))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty));
+
+            CreateMap<Comment, CommentListItemResult>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty));
 
             CreateMap<CreateCommentCommand, Comment>();
@@ -65,6 +75,9 @@ namespace BilgeBlog.Application.Mappings
 
             CreateMap<PostLike, PostLikeResult>()
                 .ForMember(dest => dest.PostTitle, opt => opt.MapFrom(src => src.Post != null ? src.Post.Title : string.Empty))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty));
+
+            CreateMap<PostLike, PostLikeListItemResult>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty));
         }
     }
