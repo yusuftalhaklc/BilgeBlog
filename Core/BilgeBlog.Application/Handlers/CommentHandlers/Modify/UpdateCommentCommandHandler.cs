@@ -1,4 +1,5 @@
 using BilgeBlog.Application.DTOs.CommentDtos.Commands;
+using BilgeBlog.Application.Exceptions;
 using BilgeBlog.Contract.Abstract;
 using MediatR;
 
@@ -17,12 +18,12 @@ namespace BilgeBlog.Application.Handlers.CommentHandlers.Modify
         {
             var comment = await _commentRepository.GetByIdAsync(request.Id);
             if (comment == null)
-                return false;
+                throw new NotFoundException("Comment", request.Id);
+
+            if (comment.UserId != request.CurrentUserId)
+                throw new ForbiddenException("Bu yorumu güncellemek için yetkiniz yok. Sadece yorum sahibi bu işlemi yapabilir.");
 
             comment.Message = request.Message;
-            comment.PostId = request.PostId;
-            comment.UserId = request.UserId;
-            comment.ParentCommentId = request.ParentCommentId;
 
             return await _commentRepository.Update(comment);
         }

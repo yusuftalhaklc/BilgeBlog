@@ -1,6 +1,7 @@
 using AutoMapper;
 using BilgeBlog.Application.DTOs.Common;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
+using BilgeBlog.Application.DTOs.UserDtos.Queries;
 using BilgeBlog.Application.DTOs.UserDtos.Results;
 using BilgeBlog.WebApi.Extensions;
 using BilgeBlog.WebApi.Requests.UserRequests;
@@ -56,6 +57,48 @@ namespace BilgeBlog.WebApi.Controllers
             var command = _mapper.Map<RefreshTokenCommand>(request);
             var result = await _mediator.Send(command);
             return Ok(BaseResponse<LoginResult>.Ok(result, "Token yenileme başarılı"));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<BaseResponse<PagedResult<UserResult>>>> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
+        {
+            var query = new GetAllUsersQuery
+            {
+                CurrentUserId = User.GetUserId(),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Search = search
+            };
+            var result = await _mediator.Send(query);
+            return Ok(BaseResponse<PagedResult<UserResult>>.Ok(result, "Kullanıcılar başarıyla getirildi"));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<BaseResponse<bool>>> Update(Guid id, [FromBody] UpdateUserRequest request)
+        {
+            var command = _mapper.Map<UpdateUserCommand>(request);
+            command.Id = id;
+            command.CurrentUserId = User.GetUserId();
+            var result = await _mediator.Send(command);
+            return Ok(BaseResponse<bool>.Ok(result, "Kullanıcı güncelleme başarılı"));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<BaseResponse<bool>>> Delete(Guid id)
+        {
+            var command = new DeleteUserCommand
+            {
+                Id = id,
+                CurrentUserId = User.GetUserId()
+            };
+            var result = await _mediator.Send(command);
+            return Ok(BaseResponse<bool>.Ok(result, "Kullanıcı silme başarılı"));
         }
     }
 }

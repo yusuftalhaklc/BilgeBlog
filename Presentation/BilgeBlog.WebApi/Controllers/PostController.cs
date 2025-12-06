@@ -85,7 +85,11 @@ namespace BilgeBlog.WebApi.Controllers
         [Authorize]
         public async Task<ActionResult<BaseResponse<bool>>> Delete(Guid id)
         {
-            var command = new DeletePostCommand { Id = id };
+            var command = new DeletePostCommand 
+            { 
+                Id = id,
+                CurrentUserId = User.GetUserId()
+            };
             var result = await _mediator.Send(command);
             return Ok(BaseResponse<bool>.Ok(result, "Blog silme başarılı"));
         }

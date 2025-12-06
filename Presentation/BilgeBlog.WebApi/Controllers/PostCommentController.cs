@@ -46,6 +46,28 @@ namespace BilgeBlog.WebApi.Controllers
             var replyCommentId = await _mediator.Send(command);
             return Ok(BaseResponse<Guid>.Ok(replyCommentId, "Yanıt eklendi"));
         }
+
+        [HttpPut("{commentId}")]
+        public async Task<ActionResult<BaseResponse<bool>>> UpdateComment(Guid postId, Guid commentId, [FromBody] UpdateCommentRequest request)
+        {
+            var command = _mapper.Map<UpdateCommentCommand>(request);
+            command.Id = commentId;
+            command.CurrentUserId = User.GetUserId();
+            var result = await _mediator.Send(command);
+            return Ok(BaseResponse<bool>.Ok(result, "Yorum güncelleme başarılı"));
+        }
+
+        [HttpDelete("{commentId}")]
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteComment(Guid postId, Guid commentId)
+        {
+            var command = new DeleteCommentCommand
+            {
+                Id = commentId,
+                CurrentUserId = User.GetUserId()
+            };
+            var result = await _mediator.Send(command);
+            return Ok(BaseResponse<bool>.Ok(result, "Yorum silme başarılı"));
+        }
     }
 }
 

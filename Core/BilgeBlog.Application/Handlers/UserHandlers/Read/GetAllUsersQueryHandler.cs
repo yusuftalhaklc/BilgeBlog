@@ -30,8 +30,18 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Read
             if (currentUser == null || currentUser.Role?.Name != RoleEnum.Admin.ToString())
                 throw new ForbiddenException("Bu işlem için admin yetkisi gereklidir.");
 
-            var query = _userRepository.GetAll(false)
-                .Include(x => x.Role);
+            var baseQuery = _userRepository.GetAll(false);
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var searchLower = request.Search.ToLower();
+                baseQuery = baseQuery.Where(x => 
+                    x.FirstName.ToLower().Contains(searchLower) ||
+                    x.LastName.ToLower().Contains(searchLower) ||
+                    x.Email.ToLower().Contains(searchLower));
+            }
+
+            var query = baseQuery.Include(x => x.Role);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
