@@ -23,6 +23,11 @@ namespace BilgeBlog.Application.Handlers.CategoryHandlers.Read
         {
             var query = _categoryRepository.GetAll(false);
 
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x => x.Name.Contains(request.Search));
+            }
+
             var totalCount = await query.CountAsync(cancellationToken);
 
             var categories = await query

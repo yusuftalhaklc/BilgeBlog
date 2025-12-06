@@ -33,12 +33,13 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BaseResponse<PagedResult<CategoryResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<BaseResponse<PagedResult<CategoryResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
         {
             var query = new GetAllCategoriesQuery
             {
                 PageNumber = pageNumber,
-                PageSize = pageSize
+                PageSize = pageSize,
+                Search = search
             };
             var result = await _mediator.Send(query);
             return Ok(BaseResponse<PagedResult<CategoryResult>>.Ok(result, "Kategoriler başarıyla getirildi"));

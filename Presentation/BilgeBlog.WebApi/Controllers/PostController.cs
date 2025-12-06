@@ -38,13 +38,21 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BaseResponse<PagedResult<PostListItemResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<BaseResponse<PagedResult<PostListItemResult>>>> GetAll(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] string? tagName = null,
+            [FromQuery] Guid? categoryId = null)
         {
             var query = new GetAllPostsQuery
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                UserId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null
+                UserId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null,
+                Search = search,
+                TagName = tagName,
+                CategoryId = categoryId
             };
             var result = await _mediator.Send(query);
             return Ok(BaseResponse<PagedResult<PostListItemResult>>.Ok(result, "Bloglar başarıyla getirildi"));

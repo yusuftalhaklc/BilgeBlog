@@ -32,6 +32,24 @@ namespace BilgeBlog.Application.Handlers.PostHandlers.Read
                 .Include(x => x.Likes)
                 .Include(x => x.Comments);
 
+            // Search: Title veya Content'te arama
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x => x.Title.Contains(request.Search) || x.Content.Contains(request.Search));
+            }
+
+            // TagName: Tag ismine göre arama
+            if (!string.IsNullOrWhiteSpace(request.TagName))
+            {
+                query = query.Where(x => x.PostTags.Any(pt => pt.Tag != null && pt.Tag.Name.Contains(request.TagName)));
+            }
+
+            // CategoryId: Category ID'ye göre filtreleme
+            if (request.CategoryId.HasValue)
+            {
+                query = query.Where(x => x.PostCategories.Any(pc => pc.CategoryId == request.CategoryId.Value));
+            }
+
             var totalCount = await query.CountAsync(cancellationToken);
 
             var posts = await query
