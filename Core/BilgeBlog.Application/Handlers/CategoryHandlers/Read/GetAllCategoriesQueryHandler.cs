@@ -28,6 +28,17 @@ namespace BilgeBlog.Application.Handlers.CategoryHandlers.Read
                 query = query.Where(x => x.Name.Contains(request.Search));
             }
 
+            query = request.SortBy switch
+            {
+                Domain.Enums.CategorySortBy.Name => request.Sort == Domain.Enums.SortOrder.Asc
+                    ? query.OrderBy(x => x.Name)
+                    : query.OrderByDescending(x => x.Name),
+                Domain.Enums.CategorySortBy.CreatedDate => request.Sort == Domain.Enums.SortOrder.Asc
+                    ? query.OrderBy(x => x.CreatedDate)
+                    : query.OrderByDescending(x => x.CreatedDate),
+                _ => query.OrderBy(x => x.Name)
+            };
+
             var totalCount = await query.CountAsync(cancellationToken);
 
             var categories = await query

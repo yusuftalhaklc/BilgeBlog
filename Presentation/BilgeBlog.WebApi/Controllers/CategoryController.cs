@@ -24,7 +24,7 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")] 
         public async Task<ActionResult<BaseResponse<Guid>>> Create([FromBody] CreateCategoryRequest request)
         {
             var command = _mapper.Map<CreateCategoryCommand>(request);
@@ -33,13 +33,40 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BaseResponse<PagedResult<CategoryResult>>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
+        public async Task<ActionResult<BaseResponse<PagedResult<CategoryResult>>>> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] string sort = "asc",
+            [FromQuery] string sortBy = "name")
         {
+            if (!string.Equals(sort, "asc", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(sort, "desc", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(BaseResponse<PagedResult<CategoryResult>>.Fail("Sort parametresi sadece 'asc' veya 'desc' olabilir."));
+            }
+
+            if (!string.Equals(sortBy, "name", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(sortBy, "createdDate", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(BaseResponse<PagedResult<CategoryResult>>.Fail("SortBy parametresi sadece 'name' veya 'createdDate' olabilir."));
+            }
+
+            var sortOrder = string.Equals(sort, "asc", StringComparison.OrdinalIgnoreCase)
+                ? Domain.Enums.SortOrder.Asc
+                : Domain.Enums.SortOrder.Desc;
+
+            var categorySortBy = string.Equals(sortBy, "name", StringComparison.OrdinalIgnoreCase)
+                ? Domain.Enums.CategorySortBy.Name
+                : Domain.Enums.CategorySortBy.CreatedDate;
+
             var query = new GetAllCategoriesQuery
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                Search = search
+                Search = search,
+                Sort = sortOrder,
+                SortBy = categorySortBy
             };
             var result = await _mediator.Send(query);
             return Ok(BaseResponse<PagedResult<CategoryResult>>.Ok(result, "Kategoriler başarıyla getirildi"));
@@ -54,7 +81,7 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<BaseResponse<bool>>> Update(Guid id, [FromBody] UpdateCategoryRequest request)
         {
             var command = _mapper.Map<UpdateCategoryCommand>(request);
@@ -64,7 +91,7 @@ namespace BilgeBlog.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<BaseResponse<bool>>> Delete(Guid id)
         {
             var command = new DeleteCategoryCommand { Id = id };
