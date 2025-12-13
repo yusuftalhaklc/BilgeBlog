@@ -83,8 +83,7 @@ namespace BilgeBlog.Persistence.Concrete
 
         public async Task<bool> Remove(T entity)
         {
-            entity.DeletedDate = DateTime.UtcNow;
-            _table.Update(entity);
+            _table.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -94,8 +93,7 @@ namespace BilgeBlog.Persistence.Concrete
             var entity = await GetByIdAsync(id);
             if (entity == null)
                 return false;
-            entity.DeletedDate = DateTime.UtcNow;
-            _table.Update(entity);
+            _table.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
         }
