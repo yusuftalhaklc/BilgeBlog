@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36429.23 d17.14
+VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilgeBlog.WebApi", "Presentation\BilgeBlog.WebApi\BilgeBlog.WebApi.csproj", "{AA615DB5-F192-4A21-B6E3-16BCEBFE277D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilgeBlog.Application", "Core\BilgeBlog.Application\BilgeBlog.Application.csproj", "{A5A9A952-4709-498A-81D5-A3E2347918AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilgeBlog.Service", "Infrastructure\BilgeBlog.Service\BilgeBlog.Service.csproj", "{77355C2C-9598-4AEF-864B-3FD9E8F066BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{A5A9A952-4709-498A-81D5-A3E2347918AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5A9A952-4709-498A-81D5-A3E2347918AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5A9A952-4709-498A-81D5-A3E2347918AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77355C2C-9598-4AEF-864B-3FD9E8F066BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77355C2C-9598-4AEF-864B-3FD9E8F066BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77355C2C-9598-4AEF-864B-3FD9E8F066BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77355C2C-9598-4AEF-864B-3FD9E8F066BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{5719A092-0975-407F-A8F0-E1FA1B17C3F8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{AA615DB5-F192-4A21-B6E3-16BCEBFE277D} = {45FFD003-C5F2-4960-8945-5590425AB52C}
 		{A5A9A952-4709-498A-81D5-A3E2347918AD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{77355C2C-9598-4AEF-864B-3FD9E8F066BE} = {A1266AE9-BA9B-468C-91E9-C709FBDBFF83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E13B6C9F-35CA-4A3C-8945-3C46CD006652}

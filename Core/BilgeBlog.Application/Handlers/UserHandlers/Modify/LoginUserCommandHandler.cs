@@ -1,5 +1,4 @@
 using AutoMapper;
-using BilgeBlog.Application.Contracts;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
 using BilgeBlog.Application.DTOs.UserDtos.Results;
 using BilgeBlog.Application.Exceptions;
@@ -36,14 +35,14 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
             if (!isPasswordValid)
                 throw new UnauthorizedException("Email veya şifre hatalı.");
 
-            var userResult = _mapper.Map<UserResult>(user);
-            var token = _tokenService.GenerateToken(userResult);
+            var token = _tokenService.GenerateAccessToken(user, user.Role);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
             await _userRepository.Update(user);
 
+            var userResult = _mapper.Map<UserResult>(user);
             return new LoginResult 
             { 
                 User = userResult,

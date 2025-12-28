@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\BilgeBlog.Persistence\BilgeBlog.Persistence.csproj" />
     <ProjectReference Include="..\..\Core\BilgeBlog.Application\BilgeBlog.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\BilgeBlog.Service\BilgeBlog.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

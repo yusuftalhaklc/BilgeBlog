@@ -1,17 +1,14 @@
+using AspNetCoreRateLimit;
 using BilgeBlog.Application.DependencyResolvers;
+using BilgeBlog.Application.Validators.PostValidators;
 using BilgeBlog.Persistence.DependencyResolvers;
 using BilgeBlog.WebApi.DependencyResolvers;
 using BilgeBlog.WebApi.Middleware;
-using BilgeBlog.WebApi.Services;
+using BilgeBlog.WebApi.Validators.PostValidators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
-using AspNetCoreRateLimit;
-using System.Text;
+using BilgeBlog.Service.DependencyResolver;
 
 namespace BilgeBlog.WebApi
 {
@@ -26,8 +23,6 @@ namespace BilgeBlog.WebApi
             builder.Services.AddAutoMapperService();
             builder.Services.AddWebApiAutoMapperService();
             builder.Services.AddMediatRService();
-
-            builder.Services.AddScoped<BilgeBlog.Application.Contracts.ITokenService, TokenService>();
 
             // CORS
             var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -54,28 +49,11 @@ namespace BilgeBlog.WebApi
             // FluentValidation
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddFluentValidationClientsideAdapters();
-            builder.Services.AddValidatorsFromAssembly(typeof(BilgeBlog.Application.Validators.PostValidators.CreatePostCommandValidator).Assembly);
-            builder.Services.AddValidatorsFromAssembly(typeof(BilgeBlog.WebApi.Validators.PostValidators.CreatePostRequestValidator).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(CreatePostCommandValidator).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(CreatePostRequestValidator).Assembly);
 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not found")))
-                };
-            });
-
+            builder.Services.AddInfrastructureServices();
+            builder.Services.AddJwtTokenService();
             builder.Services.AddAuthorization();
 
             builder.Services.AddControllers();

@@ -1,5 +1,4 @@
 using AutoMapper;
-using BilgeBlog.Application.Contracts;
 using BilgeBlog.Application.DTOs.UserDtos.Commands;
 using BilgeBlog.Application.DTOs.UserDtos.Results;
 using BilgeBlog.Application.Exceptions;
@@ -24,14 +23,7 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
 
         public async Task<LoginResult> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var principal = _tokenService.GetPrincipalFromExpiredToken(request.Token);
-            if (principal == null)
-                throw new UnauthorizedException("Geçersiz token.");
-
-            var userIdClaim = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
-                ?? principal.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-                throw new UnauthorizedException("Geçersiz token.");
+            var userId = _tokenService.GetUserIdFromToken(request.Token);
 
             var user = await _userRepository.GetAll(false)
                 .Include(x => x.Role)
@@ -40,14 +32,15 @@ namespace BilgeBlog.Application.Handlers.UserHandlers.Modify
             if (user == null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiry <= DateTime.UtcNow)
                 throw new UnauthorizedException("Geçersiz refresh token.");
 
-            var userResult = _mapper.Map<UserResult>(user);
-            var newToken = _tokenService.GenerateToken(userResult);
+            
+            var newToken = _tokenService.GenerateAccessToken(user, user.Role);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
             await _userRepository.Update(user);
 
+            var userResult = _mapper.Map<UserResult>(user);
             return new LoginResult
             {
                 User = userResult,
